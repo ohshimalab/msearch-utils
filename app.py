@@ -2,6 +2,10 @@ import PySimpleGUI as sg
 import os
 from typing import List
 from datasets import DatasetDict, load_dataset
+import pandas as pd
+
+
+from msearch_utils.utils import get_available_datasets_names, get_dataset_dict, get_dataset_info, split_dataset_dict, save_dataset
 
 download_dir = ""
 dir_selection_row = [
@@ -11,7 +15,7 @@ dir_selection_row = [
 ]
 model_selection_row = [
     sg.Listbox(
-        values=["imdb", "rotten_tomatoes"],
+        values=get_available_datasets_names(),
         key="-DATASET LIST-",
         size=(40, 20),
         select_mode=sg.LISTBOX_SELECT_MODE_MULTIPLE,
@@ -27,7 +31,7 @@ layout = [dir_selection_row, model_selection_row, download_row, progress_row]
 window = sg.Window("Demo", layout)
 
 
-def download_datasets(dataset_names: List[str]):
+def download_datasets(dataset_names: List[str], root_dir: str):
     window["-DOWNLOAD-"].update(disabled=True)
     window["-DATASET LIST-"].update(disabled=True)
     window["-DIR-"].update(disabled=True)
@@ -37,13 +41,21 @@ def download_datasets(dataset_names: List[str]):
         window["-LOG-" + sg.WRITE_ONLY_KEY].print(
             "Start downloading", dataset_name, "..."
         )
-        load_dataset(dataset_name)
+        dataset_dict = get_dataset_dict(dataset_name)
         window["-LOG-" + sg.WRITE_ONLY_KEY].print("Finish downloading", dataset_name)
         window["-LOG-" + sg.WRITE_ONLY_KEY].print(
             "Start saving", dataset_name, "to disk..."
         )
+        dataset_info = get_dataset_info(dataset_name)
+        dataset_dict_splitted = split_dataset_dict(dataset_dict, dataset_info)
+        save_dataset(root_dir, dataset_dict_splitted, dataset_info)
+        
+
         window["-LOG-" + sg.WRITE_ONLY_KEY].print(
             "Finish saving", dataset_name, "to disk"
+        )
+        window["-LOG-" + sg.WRITE_ONLY_KEY].print(
+            "-----------------------------------"
         )
 
         window["-PROGRESS-"].update(current_count=(i + 1) * 100 // len(dataset_names))
@@ -64,7 +76,7 @@ while True:
             sg.popup_error("Please select one model or more")
         else:
             window.perform_long_operation(
-                lambda: download_datasets(dataset_names), "-DOWNLOAD DATASETS-"
+                lambda: download_datasets(dataset_names, download_dir), "-DOWNLOAD DATASETS-"
             )
 
     elif event == "OK" or event == sg.WIN_CLOSED:
