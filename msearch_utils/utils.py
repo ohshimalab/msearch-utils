@@ -115,3 +115,18 @@ def save_dataset(root_dir: str, dataset_dict: DatasetDict, dataset_info: Dataset
 
 
     
+def download_dataset(root_dir: str, dataset_name: str):
+    """指定のデータセットをダウンロードする
+
+    Parameters
+    ----------
+    root_dir : str
+        _description_
+    dataset_name : str
+        _description_
+    """
+    dataset_dict = get_dataset_dict(dataset_name)
+    dataset_info = get_dataset_info(dataset_name)
+    dataset_dict_splitted = split_dataset_dict(dataset_dict, dataset_info)
+    save_dataset(root_dir, dataset_dict_splitted, dataset_info)
+        
