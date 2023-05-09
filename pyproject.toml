@@ -12,6 +12,7 @@ datasets = "^2.11.0"
 black = "^23.3.0"
 pydantic = "^1.10.7"
 typer = {extras = ["all"], version = "^0.7.0"}
+pytest = "^7.3.1"
 
 [tool.poetry.scripts]
 mse = "msearch_utils.main:app"
