@@ -54,3 +54,15 @@ List of task name can be acquired using the following command
 python main.py datasets list
 ```
 
+## Benchmark dataset
+
+Benchmark dataset csv file is provided inside the `benchmark-dataset` directory.
+
+The structure of the csv file is as follows:
+
+1. dataset_index: Index of the task (0~27)
+2. dataset_name: Name of the task
+3. model_name: Index of the pre-trained BERT model
+4. test_acc: Accuracy score of the corresponding dataset's test split, calculated with the corresponding model fine-tuned, using the dataset's train and validation split
+5. test_rel_acc: Relative (Normalized) accuracy score, with the accuracy score of best model normalized to 1 
+6. rank: rank of the corresponding model based on the test_acc column.
