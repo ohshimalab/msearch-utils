@@ -30,13 +30,6 @@ AVAILABLE_DATASETS = {
         test_split_name="test",
     ),
     "rotten_tomatoes": DatasetInfo(name="rotten_tomatoes"),
-    "tweet_eval_emoji": DatasetInfo(
-        name="tweet_eval",
-        subset_name="emotion",
-        train_split_name="train",
-        validation_split_name="validation",
-        test_split_name="test",
-    ),
     "tweet_eval_emotion": DatasetInfo(
         name="tweet_eval",
         subset_name="emoji",
@@ -78,12 +71,6 @@ AVAILABLE_DATASETS = {
         validation_split_name="validation",
         test_split_name=None,
         data_column="sentence",
-    ),
-    "ag_news": DatasetInfo(
-        name="ag_news", train_split_name="train", validation_split_name=None, test_split_name="test"
-    ),
-    "yelp_review_full": DatasetInfo(
-        name="yelp_review_full", train_split_name="train", validation_split_name=None, test_split_name="test"
     ),
     "ethos_binary": DatasetInfo(
         name="ethos", subset_name="binary", train_split_name="train", validation_split_name=None, test_split_name=None
@@ -149,13 +136,6 @@ AVAILABLE_DATASETS = {
         validation_split_name=None,
         test_split_name="test",
     ),
-    "fancyzhx_dbpedia_14": DatasetInfo(
-        name="fancyzhx/dbpedia_14",
-        data_column="content",
-        train_split_name="train",
-        validation_split_name=None,
-        test_split_name="test",
-    ),
     "hate_speech18": DatasetInfo(
         name="hate_speech18", train_split_name="train", validation_split_name=None, test_split_name=None
     ),
@@ -185,25 +165,12 @@ AVAILABLE_DATASETS = {
         validation_split_name=None,
         test_split_name="test",
     ),
-    "deysi_spam-detection-dataset": DatasetInfo(
-        name="Deysi/spam-detection-dataset",
-        train_split_name="train",
-        validation_split_name=None,
-        test_split_name="test",
-    ),
     "hate_offensive": DatasetInfo(
         name="hate_offensive",
         data_column="tweet",
         train_split_name="train",
         validation_split_name=None,
         test_split_name=None,
-    ),
-    "OxAISH-AL-LLM_wiki_toxic": DatasetInfo(
-        name="OxAISH-AL-LLM/wiki_toxic",
-        data_column="comment_text",
-        train_split_name="train",
-        validation_split_name="validation",
-        test_split_name="test",
     ),
     "mattymchen_mr": DatasetInfo(
         name="mattymchen/mr", train_split_name="test", validation_split_name=None, test_split_name=None
@@ -299,18 +266,20 @@ def save_dataset(root_dir: str, dataset_dict: DatasetDict, dataset_info: Dataset
     dataset_info : DatasetInfo
         _description_
     """
+
     if not dataset_info.subset_name:
-        dataset_dir = os.path.join(root_dir, dataset_info.name)
+        dataset_dir = dataset_info.name
     else:
-        dataset_dir = os.path.join(root_dir, dataset_info.name + "_" + dataset_info.subset_name)
+        dataset_dir = dataset_info.name + "_" + dataset_info.subset_name
     dataset_dir = dataset_dir.replace("/", "_")
-    if not os.path.isdir(dataset_dir):
-        os.makedirs(dataset_dir)
+    dataset_dir_path = os.path.join(root_dir, dataset_dir)
+    if not os.path.isdir(dataset_dir_path):
+        os.makedirs(dataset_dir_path)
     for split in dataset_dict:
         df = pd.DataFrame(dataset_dict[split])
         df = df.rename(columns={dataset_info.label_column: "label", dataset_info.data_column: "text"})
         df = df[["text", "label"]]
-        split_csv_path = os.path.join(dataset_dir, split + ".csv")
+        split_csv_path = os.path.join(dataset_dir_path, split + ".csv")
         df.to_csv(split_csv_path, index=False)
 
 
